@@ -51,20 +51,19 @@ class GatedLlamaForCausalLM(LlamaForCausalLM):
                 use_cache=False,
                 output_attentions=False
             )
-            print(layer_outputs)
-            # Get actual hidden state from output
-            if hasattr(layer_outputs, 'hidden_states'):
-                print("actual hidden state")
-                layer_output = layer_outputs.hidden_states
-            else:
-                print("default")
-                layer_output = layer_outputs[0]  # Fallback if it's a tuple
+            layer_output = layer_outputs[0]  # Fallback if it's a tuple
 
             # Blend according to gate
             # Compute a gate from the mean hidden representation
-            gate_input = hidden_states.mean(dim=1)  # [batch_size, hidden_dim]
-            gate_prob = self.gates[i](gate_input)   # [batch_size, 1]
-            gate_prob = gate_prob.unsqueeze(1).unsqueeze(2)  # [batch, 1, 1] for broadcasting
+            # Compute gate from mean hidden state over sequence
+            gate_input = hidden_states.mean(dim=1)  # shape: [batch_size, hidden_dim]
+            gate_prob = self.gates[i](gate_input)   # shape: [batch_size, 1]
+
+            # Expand gate_prob from [batch, 1] → [batch, seq_len, hidden_dim]
+            gate_prob = gate_prob.squeeze(-1)       # shape: [batch]
+            gate_prob = gate_prob.unsqueeze(1).unsqueeze(2)  # shape: [batch, 1, 1]
+            gate_prob = gate_prob.expand(-1, hidden_states.size(1), hidden_states.size(2))  # [batch, seq_len, hidden_dim]
+
 
             # Apply gated layer skipping
             hidden_states = (1 - gate_prob) * hidden_states + gate_prob * layer_output
