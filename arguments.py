@@ -22,6 +22,8 @@ class Arguments:
     model_args: Optional[str] = None
     seed: Optional[int] = 42
     output_dir: str = "./logs"
+    dynamic_skipping: bool = False  # Add dynamic_skipping as a field
+    skip_threshold: float = 0.5  # Add skip_threshold as a field
 
 
 # Source: https://github.com/EleutherAI/lm-evaluation-harness/blob/a9eaaf46f1e246e5ce090e37f2f99fe1cfe5a919/lm_eval/utils.py

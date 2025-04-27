@@ -1,0 +1,1 @@
+{"gsm8k": {"alias": "gsm8k", "exact_match,strict-match": 0.0, "exact_match_stderr,strict-match": 0.0, "exact_match,flexible-extract": 0.0, "exact_match_stderr,flexible-extract": 0.0}}{"acceptance_rate": {"mean": 0.40050802528858187}, "total_time": {"mean": 6.340890026092529}, "time_per_token": {"mean": 0.01238455083221197}, "tokens_per_second": {"mean": 81.97568054199219}}
