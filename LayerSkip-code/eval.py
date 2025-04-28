@@ -7,7 +7,9 @@
 
 from dataclasses import asdict, dataclass
 from typing import Any, List, Optional, Tuple, Union
-
+import datetime
+import json
+import os
 import torch
 import transformers
 from tqdm import tqdm
@@ -391,7 +393,7 @@ class EvalHarnessLM(TemplateLM):
 
         return loglikelihoods
 
-def main(args: Arguments, eval_arguments: EvalArguments, generation_config: GenerationConfig):
+def main(args: Arguments, eval_arguments: EvalArguments, generation_config: GenerationConfig, output_fname: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     setup(args, device=device)
     transformers.utils.logging.set_verbosity_error()
@@ -413,7 +415,7 @@ def main(args: Arguments, eval_arguments: EvalArguments, generation_config: Gene
     )
 
     # create evaluator
-    wrap = EvalHarnessLM(generator, generation_config, device)
+    wrap = EvalHarnessLM(generator, generation_config, device, logits_cache=False)
 
     # Warmup
     warmup = 1
@@ -428,6 +430,9 @@ def main(args: Arguments, eval_arguments: EvalArguments, generation_config: Gene
     print(results["results"])
     wrap.metric_result.pop("predicted_text")
     print(wrap.metric_result)
+    with open(output_fname, "w") as f:
+        json.dump(results["results"], f)
+        json.dump(wrap.metric_result, f)
 
 def process_cli_arguments() -> Tuple[Arguments, EvalArguments, GenerationConfig]:
     parser = transformers.HfArgumentParser((Arguments, EvalArguments, GenerationConfig))
@@ -446,4 +451,5 @@ def process_cli_arguments() -> Tuple[Arguments, EvalArguments, GenerationConfig]
 
 if __name__ == "__main__":
     args, eval_arguments, generation_config = process_cli_arguments()
-    main(args, eval_arguments, generation_config)
+    os.makedirs(args.output_dir, exist_ok=True)
+    main(args, eval_arguments, generation_config, f"{args.output_dir}/eval_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
