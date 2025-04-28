@@ -45,16 +45,26 @@ dataloader = DataLoader(
 config = AutoConfig.from_pretrained("facebook/layerskip-llama2-7B")
 model = GatedLlamaForCausalLM.from_pretrained(
     "facebook/layerskip-llama2-7B",
-    config=config
+    config=config,
+    torch_dtype=torch.float16,   # <- very important
+    device_map="auto"
 )
 model = model.to(device).train()
+for param in model.model.parameters():
+    param.requires_grad = False
+for param in model.lm_head.parameters():
+    param.requires_grad = False
+for param in model.gates.parameters():
+    param.requires_grad = True
 
 # 5) Optimizer
-optimizer = AdamW(model.parameters(), lr=5e-5)
+optimizer = AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=5e-5)
+#optimizer = AdamW(model.parameters(), lr=5e-5)
 
 # 6) Training loop
 for epoch in range(3):
-    for batch in dataloader:
+    print("Epoch: " + str(epoch))
+    for i, batch in enumerate(dataloader):
         # now these are torch.Tensors, not lists
         input_ids      = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
@@ -66,13 +76,14 @@ for epoch in range(3):
             attention_mask=attention_mask,
             labels=labels
         )
-        loss = outputs.loss
+        loss = outputs["loss"]
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        print(f"Loss: {loss.item():.4f}")
+        if i == 0 or i == len(dataloader) - 1:
+            print(f"Loss: {loss.item():.4f}")
 
 # 7) Save
 model.save_pretrained("gated-layerskip-llama2")
