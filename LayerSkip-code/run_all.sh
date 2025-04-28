@@ -1,13 +1,13 @@
 #!/bin/bash
 
 models=(
-  # "facebook/layerskip-llama2-7B"
-  # "facebook/layerskip-llama2-13B"
-  # "facebook/layerskip-llama2-70B"
-  # "facebook/layerskip-codellama-7B"
-  # "facebook/layerskip-llama3-8B"
-  # "facebook/layerskip-llama3.2-1B"
-  "facebook/layerskip-codellama-34B"
+  "facebook/layerskip-llama2-7B"
+  "facebook/layerskip-llama2-13B"
+  "facebook/layerskip-llama2-70B"
+  "facebook/layerskip-codellama-7B"
+  "facebook/layerskip-llama3-8B"
+  "facebook/layerskip-llama3.2-1B"
+  # "facebook/layerskip-codellama-34B"
 )
 
 for model in "${models[@]}"; do

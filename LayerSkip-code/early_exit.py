@@ -8,7 +8,7 @@ import csv
 
 prompt = "typing import List\ndef bucket_sort(A: List):"
 
-checkpoint = "facebook/layerskip-codellama-7B"
+checkpoint = "facebook/layerskip-llama2-13B"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(torch.cuda.memory_allocated())
 
@@ -18,9 +18,9 @@ top_p = 0.9
 temperature = 0.6
 
 warmup = 2
-repeat = 5  # maybe lower if you want faster testing!
+repeat = 5 
 
-early_exit_values = [2, 4, 6, 8, 10, 12]  # <-- dynamic early exit values to test
+early_exit_values = [2, 4, 6, 8, 10, 12]
 
 # Load base model and tokenizer
 config = LlamaConfig.from_pretrained(checkpoint)
@@ -263,7 +263,7 @@ for res in results:
     print(f"    Average Tokens/sec: {res['spec_tokens_per_sec']:.2f}")
 
 
-csv_file = "benchmark_results_13B.csv"
+csv_file = "benchmark_results_llama3-8B.csv"
 csv_columns = [
     "early_exit",
     "auto_total_time",
