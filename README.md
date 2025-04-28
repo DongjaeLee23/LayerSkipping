@@ -24,3 +24,38 @@ To train:
 ```
 python finetune_gates.py
 ```
+
+# LayerSkipping Early Exit
+The set up environment is the same as in LayerSkipping 
+
+To run the early exit file:
+Select the specific model for training in checkpoint = "{model_name}" in early_exit.py
+Then run
+
+```
+python early_exit.py
+```
+
+Afterwards you should get the csv files containing information about the evaluation of each model. This information can be visualized by running the early exit cells
+
+```
+visualization.ipynb
+```
+
+# LayerSkipping Evaluations
+The set up environment is the same as in LayerSkipping 
+
+To run the evaluation script:
+
+
+```
+chmod +x run_all.sh
+./run_all.sh
+```
+
+Afterwards you should get the log files containing information about the evaluation of each model. This information can be visualized by running the evaluation cells in 
+
+```
+visualization.ipynb
+```
+
