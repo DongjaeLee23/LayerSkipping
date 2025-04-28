@@ -3,6 +3,7 @@
 Setup environment:
 
 ```
+# remember to change transformers==4.45.2 in requirements.txt
 $ conda create --name layer_skip python=3.10
 $ conda activate layer_skip
 $ pip install -r requirements.txt
